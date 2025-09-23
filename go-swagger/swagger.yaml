@@ -1,0 +1,50 @@
+swagger: "2.0"
+info:
+    title: "Users API"
+    version: "1.0.0"
+host: "localhost:8080"
+schemes:
+    - http
+paths:
+    /users:
+        get:
+            summary: "Get users"
+            operationId: getUsers
+            responses:
+                200:
+                    description: "OK"
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/User"
+        post:
+            summary: "Create user"
+            operationId: createUsers
+            parameters:
+                - in: body
+                  name: body
+                  required: true
+                  schema:
+                      $ref: "#/definitions/NewUser"
+            responses:
+                201:
+                    description: "Created"
+                    schema:
+                        $ref: "#/definitions/User"
+                400:
+                    description: "Bad Request"
+definitions:
+    User:
+        type: object
+        properties:
+            id:
+                type: integer
+            name:
+                type: string
+    NewUser:
+        type: object
+        required:
+            - name
+        properties:
+            name:
+                type: string

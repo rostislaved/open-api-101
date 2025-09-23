@@ -1,0 +1,10 @@
+filename: "mock_{{.InterfaceName | snakecase }}_test.go"
+
+dir: "{{.InterfaceDir}}"
+
+inpackage: true # necessary if method in interface returns the same interface
+
+packages:
+    server/handlers:
+    interfaces:
+        UseCases:
