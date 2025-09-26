@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 
 	api "server/generated"
@@ -15,8 +15,8 @@ type Handlers struct {
 }
 
 type UseCases interface {
-	GetUser(ctx context.Context, id int) usecases.User
-	CreateUsers(ctx context.Context, userRequests usecases.CreateUserRequestDTO) int
+	GetUser(ctx context.Context, id int) (usecases.User, error)
+	CreateUsers(ctx context.Context, userRequests usecases.CreateUserRequestDTO) (int, error)
 }
 
 func New(useCases UseCases) *Handlers {
@@ -26,13 +26,59 @@ func New(useCases UseCases) *Handlers {
 }
 
 func (h *Handlers) GetUserById(w http.ResponseWriter, r *http.Request, id int) {
-	fmt.Println(id)
+	user, err := h.useCases.GetUser(r.Context(), id)
+	if err != nil {
+		var response api.ErrorResponse
 
-	user := h.useCases.GetUser(r.Context(), id)
+		switch {
+		case errors.Is(err, usecases.ErrNotFound):
+			response = api.ErrorResponse{
+				Code:  404,
+				Error: "Not Found",
+			}
+			w.WriteHeader(http.StatusNotFound)
+		case errors.Is(err, usecases.ErrNotPublic1):
+			response = api.ErrorResponse{
+				Code:  1,
+				Error: "Internal Server Error 1",
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+		case errors.Is(err, usecases.ErrNotPublic2):
+			response = api.ErrorResponse{
+				Code:  2,
+				Error: "Internal Server Error 2",
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+		default:
+			response = api.ErrorResponse{
+				Code:  -1,
+				Error: "Internal Server Error",
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		responseBytes, err := json.Marshal(response)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		_, err = w.Write(responseBytes)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
+		}
+
+		return
+	}
 
 	response := api.GetUserByIdResponse{
-		Id:   &user.ID,
-		Name: &user.Name,
+		Id:   user.ID,
+		Name: user.Name,
 	}
 
 	responseBytes, err := json.Marshal(response)
@@ -61,16 +107,50 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	fmt.Println(request)
-
 	createUserRequestDTO := usecases.CreateUserRequestDTO{
 		Name: request.Name,
 	}
 
-	id := h.useCases.CreateUsers(r.Context(), createUserRequestDTO)
+	id, err := h.useCases.CreateUsers(r.Context(), createUserRequestDTO)
+	if err != nil {
+		var response api.ErrorResponse
+
+		switch {
+		case errors.Is(err, usecases.ErrValidation):
+			response = api.ErrorResponse{
+				Code:  3,
+				Error: err.Error(),
+			}
+			w.WriteHeader(http.StatusBadRequest)
+		default:
+			response = api.ErrorResponse{
+				Code:  -1,
+				Error: "Internal Server Error",
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		responseBytes, err := json.Marshal(response)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		_, err = w.Write(responseBytes)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
+		}
+
+		return
+	}
 
 	response := api.CreateUserResponse{
-		Id: &id,
+		Id: id,
 	}
 
 	responseBytes, err := json.Marshal(response)

@@ -2,4 +2,6 @@ package: api
 generate:
     client: true
     models: true
+output-options:
+    response-type-suffix: Resp
 output: generated/gen.go

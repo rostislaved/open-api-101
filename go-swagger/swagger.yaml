@@ -1,50 +1,96 @@
 swagger: "2.0"
 info:
-    title: "Users API"
-    version: "1.0.0"
-host: "localhost:8080"
+    title: Users API
+    version: 1.0.0
+
+host: localhost:8080
 schemes:
     - http
+
 paths:
-    /users:
+    /users/{id}:
         get:
-            summary: "Get users"
-            operationId: getUsers
+            summary: Get user by ID
+            operationId: GetUserById
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  type: integer
             responses:
-                200:
-                    description: "OK"
+                "200":
+                    description: OK
                     schema:
-                        type: array
-                        items:
-                            $ref: "#/definitions/User"
+                        $ref: "#/definitions/GetUserByIdResponse"
+                "404":
+                    description: Not Found
+                    schema:
+                        $ref: "#/definitions/ErrorResponse"
+                "500":
+                    description: Internal Server Error
+                    schema:
+                        $ref: "#/definitions/ErrorResponse"
+
+    /users:
         post:
-            summary: "Create user"
-            operationId: createUsers
+            summary: Create user
+            operationId: CreateUser
             parameters:
                 - in: body
                   name: body
                   required: true
                   schema:
-                      $ref: "#/definitions/NewUser"
+                      $ref: "#/definitions/CreateUserRequest"
             responses:
-                201:
-                    description: "Created"
+                "201":
+                    description: Created
                     schema:
-                        $ref: "#/definitions/User"
-                400:
-                    description: "Bad Request"
+                        $ref: "#/definitions/CreateUserResponse"
+                "400":
+                    description: Bad Request
+                    schema:
+                        $ref: "#/definitions/ErrorResponse"
+                "500":
+                    description: Internal Server Error
+                    schema:
+                        $ref: "#/definitions/ErrorResponse"
+            x-codegen-request-body-name: body
+
 definitions:
-    User:
+    GetUserByIdResponse:
         type: object
+        required:
+            - id
+            - name
         properties:
             id:
                 type: integer
             name:
                 type: string
-    NewUser:
+
+    CreateUserRequest:
         type: object
         required:
             - name
         properties:
             name:
                 type: string
+
+    CreateUserResponse:
+        type: object
+        required:
+            - id
+        properties:
+            id:
+                type: integer
+
+    ErrorResponse:
+        type: object
+        required:
+            - code
+            - error
+        properties:
+            error:
+                type: string
+            code:
+                type: integer

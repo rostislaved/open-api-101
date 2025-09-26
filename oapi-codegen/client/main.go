@@ -2,30 +2,34 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	api "client/generated"
 )
 
 func main() {
-	option2_ClientWithResponses()
+	option1()
+	option2()
 }
 
-func option1_Client() {
+const (
+	host = "http://localhost:8080"
+	id   = 1
+)
+
+// Обычный Client
+func option1() {
 	baseClient := http.Client{}
 
-	client, err := api.NewClient("http://localhost:8080", api.WithHTTPClient(&baseClient))
+	client, err := api.NewClient(host, api.WithHTTPClient(&baseClient))
 	if err != nil {
 		panic(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-
-	response, err := client.GetUserById(ctx, 1)
+	response, err := client.GetUserById(context.Background(), id)
 	if err != nil {
 		panic(err)
 	}
@@ -35,28 +39,69 @@ func option1_Client() {
 		panic(err)
 	}
 
-	fmt.Println(string(bodyBytes))
+	switch response.StatusCode {
+	case http.StatusOK:
+		var r api.GetUserByIdResponse
+
+		err = json.Unmarshal(bodyBytes, &r)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(r)
+	case http.StatusNotFound:
+		var r api.ErrorResponse
+
+		err = json.Unmarshal(bodyBytes, &r)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(r)
+	case http.StatusInternalServerError:
+		var r api.ErrorResponse
+
+		err = json.Unmarshal(bodyBytes, &r)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(r)
+	default:
+		var r api.ErrorResponse
+
+		err = json.Unmarshal(bodyBytes, &r)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(r)
+	}
+
 }
 
-func option2_ClientWithResponses() {
+// ClientWithResponses
+func option2() {
 	baseClient := http.Client{}
 
-	client, err := api.NewClientWithResponses("http://localhost:8080", api.WithHTTPClient(&baseClient))
+	client, err := api.NewClientWithResponses(host, api.WithHTTPClient(&baseClient))
 	if err != nil {
 		panic(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-
-	response, err := client.GetUserByIdWithResponse(ctx, 1)
+	response, err := client.GetUserByIdWithResponse(context.Background(), id)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(response.StatusCode())
-	fmt.Println(response.Status())
-	fmt.Println(*response.JSON200.Id)
-	fmt.Println(*response.JSON200.Name)
-	fmt.Println(response.JSON404)
+	switch response.StatusCode() {
+	case http.StatusOK:
+		fmt.Printf("%+v\n", *response.JSON200)
+	case http.StatusNotFound:
+		fmt.Printf("%+v\n", *response.JSON404)
+	case http.StatusInternalServerError:
+		fmt.Printf("%+v\n", *response.JSON500)
+	default:
+		fmt.Printf("%+v\n", string(response.Body))
+	}
 }

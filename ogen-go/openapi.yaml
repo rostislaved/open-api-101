@@ -1,0 +1,106 @@
+openapi: 3.0.2
+info:
+    title: Users API
+    version: 1.0.0
+    license:
+        name: Company Internal
+security: []
+servers:
+    - url: http://localhost:8080
+paths:
+    /users/{id}:
+        get:
+            summary: Get user by ID
+            operationId: GetUserById
+            parameters:
+                -   name: id
+                    in: path
+                    required: true
+                    schema:
+                        type: integer
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUserByIdResponse'
+                "404":
+                    description: Not Found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorResponse'
+                "500":
+                    description: Internal Server Error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorResponse'
+    /users:
+        post:
+            summary: Create user
+            operationId: CreateUser
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateUserRequest'
+            responses:
+                "201":
+                    description: Created
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateUserResponse'
+                "400":
+                    description: Bad Request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorResponse'
+                "500":
+                    description: Internal Server Error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorResponse'
+            x-codegen-request-body-name: body
+
+components:
+    schemas:
+        GetUserByIdResponse:
+            type: object
+            required:
+                - id
+                - name
+            properties:
+                id:
+                    type: integer
+                name:
+                    type: string
+        CreateUserRequest:
+            type: object
+            required:
+                - name
+            properties:
+                name:
+                    type: string
+        CreateUserResponse:
+            type: object
+            required:
+                - id
+            properties:
+                id:
+                    type: integer
+        ErrorResponse:
+            type: object
+            required:
+                - code
+                - error
+            properties:
+                error:
+                    type: string
+                code:
+                    type: integer

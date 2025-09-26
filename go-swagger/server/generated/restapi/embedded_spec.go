@@ -29,31 +29,16 @@ func init() {
   "host": "localhost:8080",
   "paths": {
     "/users": {
-      "get": {
-        "summary": "Get users",
-        "operationId": "getUsers",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          }
-        }
-      },
       "post": {
         "summary": "Create user",
-        "operationId": "createUsers",
+        "operationId": "CreateUser",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/NewUser"
+              "$ref": "#/definitions/CreateUserRequest"
             }
           }
         ],
@@ -61,18 +46,62 @@ func init() {
           "201": {
             "description": "Created",
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/CreateUserResponse"
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "operationId": "GetUserById",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/GetUserByIdResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
     }
   },
   "definitions": {
-    "NewUser": {
+    "CreateUserRequest": {
       "type": "object",
       "required": [
         "name"
@@ -83,8 +112,38 @@ func init() {
         }
       }
     },
-    "User": {
+    "CreateUserResponse": {
       "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "required": [
+        "code",
+        "error"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "GetUserByIdResponse": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
       "properties": {
         "id": {
           "type": "integer"
@@ -108,31 +167,16 @@ func init() {
   "host": "localhost:8080",
   "paths": {
     "/users": {
-      "get": {
-        "summary": "Get users",
-        "operationId": "getUsers",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          }
-        }
-      },
       "post": {
         "summary": "Create user",
-        "operationId": "createUsers",
+        "operationId": "CreateUser",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/NewUser"
+              "$ref": "#/definitions/CreateUserRequest"
             }
           }
         ],
@@ -140,18 +184,62 @@ func init() {
           "201": {
             "description": "Created",
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/CreateUserResponse"
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "operationId": "GetUserById",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/GetUserByIdResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
     }
   },
   "definitions": {
-    "NewUser": {
+    "CreateUserRequest": {
       "type": "object",
       "required": [
         "name"
@@ -162,8 +250,38 @@ func init() {
         }
       }
     },
-    "User": {
+    "CreateUserResponse": {
       "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "required": [
+        "code",
+        "error"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "GetUserByIdResponse": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
       "properties": {
         "id": {
           "type": "integer"

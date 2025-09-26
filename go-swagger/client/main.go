@@ -12,32 +12,40 @@ import (
 )
 
 func main() {
+	option1()
+	option2()
+}
+
+func option1() {
 	transport := httptransport.New("localhost:8080", "", []string{"http"})
 	apiClient := client.New(transport, strfmt.Default)
 
-	// request 1
-	params := operations.NewGetUsersParams()
+	params := operations.NewGetUserByIDParams()
+	params.SetID(1)
 
-	resp, err := apiClient.Operations.GetUsers(params)
+	resp, err := apiClient.Operations.GetUserByID(params)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Users: %v\n", resp.Payload[0])
+	fmt.Printf("ID: %v\n", *resp.Payload.ID)
+	fmt.Printf("Name: %v\n", *resp.Payload.Name)
+}
 
-	// request 2
-	createUsersRequest := operations.NewCreateUsersParams()
+func option2() {
+	transport := httptransport.New("localhost:8080", "", []string{"http"})
+	apiClient := client.New(transport, strfmt.Default)
 
-	name := "Bob"
-	newUser := models.NewUser{Name: &name}
+	name := "Alice"
+	newUser := models.CreateUserRequest{Name: &name}
 
-	createUsersRequest.SetBody(&newUser)
+	params := operations.NewCreateUserParams()
+	params.SetBody(&newUser)
 
-	resp2, err := apiClient.Operations.CreateUsers(createUsersRequest)
+	resp, err := apiClient.Operations.CreateUser(params)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Users: %+v\n", resp2.Payload)
-
+	fmt.Printf("ID: %+v\n", *resp.Payload.ID)
 }

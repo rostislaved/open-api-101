@@ -16,30 +16,30 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-// CreateUserRequest1 defines model for CreateUserRequest1.
-type CreateUserRequest1 struct {
+// CreateUserRequest defines model for CreateUserRequest.
+type CreateUserRequest struct {
 	Name string `json:"name"`
 }
 
-// CreateUserResponse1 defines model for CreateUserResponse1.
-type CreateUserResponse1 struct {
-	Id *int `json:"id,omitempty"`
+// CreateUserResponse defines model for CreateUserResponse.
+type CreateUserResponse struct {
+	Id int `json:"id"`
 }
 
-// ErrorResponse1 defines model for ErrorResponse1.
-type ErrorResponse1 struct {
-	Code  *int   `json:"code,omitempty"`
+// ErrorResponse defines model for ErrorResponse.
+type ErrorResponse struct {
+	Code  int    `json:"code"`
 	Error string `json:"error"`
 }
 
-// GetUserByIdResponse1 defines model for GetUserByIdResponse1.
-type GetUserByIdResponse1 struct {
-	Id   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
+// GetUserByIdResponse defines model for GetUserByIdResponse.
+type GetUserByIdResponse struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
-type CreateUserJSONRequestBody = CreateUserRequest1
+type CreateUserJSONRequestBody = CreateUserRequest
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -277,23 +277,24 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 	// CreateUserWithBodyWithResponse request with any body
-	CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
+	CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResp, error)
 
-	CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
+	CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResp, error)
 
 	// GetUserByIdWithResponse request
-	GetUserByIdWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*GetUserByIdResponse, error)
+	GetUserByIdWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*GetUserByIdResp, error)
 }
 
-type CreateUserResponse struct {
+type CreateUserResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *CreateUserResponse1
-	JSON400      *ErrorResponse1
+	JSON201      *CreateUserResponse
+	JSON400      *ErrorResponse
+	JSON500      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
-func (r CreateUserResponse) Status() string {
+func (r CreateUserResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -301,22 +302,23 @@ func (r CreateUserResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r CreateUserResponse) StatusCode() int {
+func (r CreateUserResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetUserByIdResponse struct {
+type GetUserByIdResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *GetUserByIdResponse1
-	JSON404      *ErrorResponse1
+	JSON200      *GetUserByIdResponse
+	JSON404      *ErrorResponse
+	JSON500      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
-func (r GetUserByIdResponse) Status() string {
+func (r GetUserByIdResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -324,99 +326,113 @@ func (r GetUserByIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetUserByIdResponse) StatusCode() int {
+func (r GetUserByIdResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-// CreateUserWithBodyWithResponse request with arbitrary body returning *CreateUserResponse
-func (c *ClientWithResponses) CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error) {
+// CreateUserWithBodyWithResponse request with arbitrary body returning *CreateUserResp
+func (c *ClientWithResponses) CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResp, error) {
 	rsp, err := c.CreateUserWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseCreateUserResponse(rsp)
+	return ParseCreateUserResp(rsp)
 }
 
-func (c *ClientWithResponses) CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResponse, error) {
+func (c *ClientWithResponses) CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResp, error) {
 	rsp, err := c.CreateUser(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseCreateUserResponse(rsp)
+	return ParseCreateUserResp(rsp)
 }
 
-// GetUserByIdWithResponse request returning *GetUserByIdResponse
-func (c *ClientWithResponses) GetUserByIdWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*GetUserByIdResponse, error) {
+// GetUserByIdWithResponse request returning *GetUserByIdResp
+func (c *ClientWithResponses) GetUserByIdWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*GetUserByIdResp, error) {
 	rsp, err := c.GetUserById(ctx, id, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetUserByIdResponse(rsp)
+	return ParseGetUserByIdResp(rsp)
 }
 
-// ParseCreateUserResponse parses an HTTP response from a CreateUserWithResponse call
-func ParseCreateUserResponse(rsp *http.Response) (*CreateUserResponse, error) {
+// ParseCreateUserResp parses an HTTP response from a CreateUserWithResponse call
+func ParseCreateUserResp(rsp *http.Response) (*CreateUserResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &CreateUserResponse{
+	response := &CreateUserResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest CreateUserResponse1
+		var dest CreateUserResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON201 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ErrorResponse1
+		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
 
 	}
 
 	return response, nil
 }
 
-// ParseGetUserByIdResponse parses an HTTP response from a GetUserByIdWithResponse call
-func ParseGetUserByIdResponse(rsp *http.Response) (*GetUserByIdResponse, error) {
+// ParseGetUserByIdResp parses an HTTP response from a GetUserByIdWithResponse call
+func ParseGetUserByIdResp(rsp *http.Response) (*GetUserByIdResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetUserByIdResponse{
+	response := &GetUserByIdResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest GetUserByIdResponse1
+		var dest GetUserByIdResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest ErrorResponse1
+		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
 
 	}
 

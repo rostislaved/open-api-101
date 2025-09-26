@@ -37,14 +37,14 @@ func configureAPI(api *operations.UsersAPIAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.CreateUsersHandler == nil {
-		api.CreateUsersHandler = operations.CreateUsersHandlerFunc(func(params operations.CreateUsersParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.CreateUsers has not yet been implemented")
+	if api.CreateUserHandler == nil {
+		api.CreateUserHandler = operations.CreateUserHandlerFunc(func(params operations.CreateUserParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.CreateUser has not yet been implemented")
 		})
 	}
-	if api.GetUsersHandler == nil {
-		api.GetUsersHandler = operations.GetUsersHandlerFunc(func(params operations.GetUsersParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.GetUsers has not yet been implemented")
+	if api.GetUserByIDHandler == nil {
+		api.GetUserByIDHandler = operations.GetUserByIDHandlerFunc(func(params operations.GetUserByIDParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.GetUserByID has not yet been implemented")
 		})
 	}
 

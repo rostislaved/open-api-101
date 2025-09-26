@@ -56,30 +56,30 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	CreateUsers(params *CreateUsersParams, opts ...ClientOption) (*CreateUsersCreated, error)
+	CreateUser(params *CreateUserParams, opts ...ClientOption) (*CreateUserCreated, error)
 
-	GetUsers(params *GetUsersParams, opts ...ClientOption) (*GetUsersOK, error)
+	GetUserByID(params *GetUserByIDParams, opts ...ClientOption) (*GetUserByIDOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
 
 /*
-CreateUsers creates user
+CreateUser creates user
 */
-func (a *Client) CreateUsers(params *CreateUsersParams, opts ...ClientOption) (*CreateUsersCreated, error) {
+func (a *Client) CreateUser(params *CreateUserParams, opts ...ClientOption) (*CreateUserCreated, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewCreateUsersParams()
+		params = NewCreateUserParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "createUsers",
+		ID:                 "CreateUser",
 		Method:             "POST",
 		PathPattern:        "/users",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &CreateUsersReader{formats: a.formats},
+		Reader:             &CreateUserReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -91,33 +91,33 @@ func (a *Client) CreateUsers(params *CreateUsersParams, opts ...ClientOption) (*
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*CreateUsersCreated)
+	success, ok := result.(*CreateUserCreated)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for createUsers: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for CreateUser: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 
 /*
-GetUsers gets users
+GetUserByID gets user by ID
 */
-func (a *Client) GetUsers(params *GetUsersParams, opts ...ClientOption) (*GetUsersOK, error) {
+func (a *Client) GetUserByID(params *GetUserByIDParams, opts ...ClientOption) (*GetUserByIDOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewGetUsersParams()
+		params = NewGetUserByIDParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "getUsers",
+		ID:                 "GetUserById",
 		Method:             "GET",
-		PathPattern:        "/users",
+		PathPattern:        "/users/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &GetUsersReader{formats: a.formats},
+		Reader:             &GetUserByIDReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -129,13 +129,13 @@ func (a *Client) GetUsers(params *GetUsersParams, opts ...ClientOption) (*GetUse
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*GetUsersOK)
+	success, ok := result.(*GetUserByIDOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for getUsers: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for GetUserById: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

@@ -42,11 +42,11 @@ func NewUsersAPIAPI(spec *loads.Document) *UsersAPIAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		CreateUsersHandler: CreateUsersHandlerFunc(func(params CreateUsersParams) middleware.Responder {
-			return middleware.NotImplemented("operation CreateUsers has not yet been implemented")
+		CreateUserHandler: CreateUserHandlerFunc(func(params CreateUserParams) middleware.Responder {
+			return middleware.NotImplemented("operation CreateUser has not yet been implemented")
 		}),
-		GetUsersHandler: GetUsersHandlerFunc(func(params GetUsersParams) middleware.Responder {
-			return middleware.NotImplemented("operation GetUsers has not yet been implemented")
+		GetUserByIDHandler: GetUserByIDHandlerFunc(func(params GetUserByIDParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetUserByID has not yet been implemented")
 		}),
 	}
 }
@@ -84,10 +84,10 @@ type UsersAPIAPI struct {
 	//   - application/json
 	JSONProducer runtime.Producer
 
-	// CreateUsersHandler sets the operation handler for the create users operation
-	CreateUsersHandler CreateUsersHandler
-	// GetUsersHandler sets the operation handler for the get users operation
-	GetUsersHandler GetUsersHandler
+	// CreateUserHandler sets the operation handler for the create user operation
+	CreateUserHandler CreateUserHandler
+	// GetUserByIDHandler sets the operation handler for the get user by Id operation
+	GetUserByIDHandler GetUserByIDHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -165,11 +165,11 @@ func (o *UsersAPIAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.CreateUsersHandler == nil {
-		unregistered = append(unregistered, "CreateUsersHandler")
+	if o.CreateUserHandler == nil {
+		unregistered = append(unregistered, "CreateUserHandler")
 	}
-	if o.GetUsersHandler == nil {
-		unregistered = append(unregistered, "GetUsersHandler")
+	if o.GetUserByIDHandler == nil {
+		unregistered = append(unregistered, "GetUserByIDHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -262,11 +262,11 @@ func (o *UsersAPIAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/users"] = NewCreateUsers(o.context, o.CreateUsersHandler)
+	o.handlers["POST"]["/users"] = NewCreateUser(o.context, o.CreateUserHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/users"] = NewGetUsers(o.context, o.GetUsersHandler)
+	o.handlers["GET"]["/users/{id}"] = NewGetUserByID(o.context, o.GetUserByIDHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

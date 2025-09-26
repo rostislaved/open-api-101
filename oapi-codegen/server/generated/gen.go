@@ -19,19 +19,19 @@ type CreateUserRequest struct {
 
 // CreateUserResponse defines model for CreateUserResponse.
 type CreateUserResponse struct {
-	Id *int `json:"id,omitempty"`
+	Id int `json:"id"`
 }
 
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
-	Code  *int   `json:"code,omitempty"`
+	Code  int    `json:"code"`
 	Error string `json:"error"`
 }
 
 // GetUserByIdResponse defines model for GetUserByIdResponse.
 type GetUserByIdResponse struct {
-	Id   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
