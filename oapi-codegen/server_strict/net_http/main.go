@@ -15,7 +15,12 @@ func main() {
 	strictMux := api.NewStrictHandler(handlers, nil)
 	mux := api.Handler(strictMux)
 
-	err := http.ListenAndServe(":8080", mux)
+	mux, err := addValidationMiddleware(mux)
+	if err != nil {
+		panic(err)
+	}
+
+	err = http.ListenAndServe(":8080", mux)
 	if err != nil {
 		panic(err)
 	}

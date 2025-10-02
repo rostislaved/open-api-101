@@ -52,7 +52,7 @@ type CreateUserRequestDTO struct {
 func (u *UseCases) CreateUsers(ctx context.Context, createUserRequestDTO CreateUserRequestDTO) (int, error) {
 	switch createUserRequestDTO.Name {
 	case "Alice":
-		return 10, nil
+		return 1, nil
 	case "":
 		return 0, ErrValidation
 	default:
