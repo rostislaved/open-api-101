@@ -9,3 +9,4 @@ https://ogen.dev/
 
 Заметки:
 - Генерируется сразу и сервер и клиент
+- https://habr.com/ru/articles/694090/
