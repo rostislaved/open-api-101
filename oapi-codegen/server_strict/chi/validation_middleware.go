@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	middleware "github.com/oapi-codegen/nethttp-middleware"
 
@@ -40,7 +39,7 @@ func errorHandler(ctx context.Context, e error, w http.ResponseWriter, r *http.R
 	resp := ErrorResponse{
 		Error: Error{
 			Code:    statusCode,
-			Message: getMsgFromErr(e),
+			Message: e.Error(),
 		},
 	}
 
@@ -68,15 +67,4 @@ type ErrorResponse struct {
 type Error struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
-}
-
-func getMsgFromErr(err error) string {
-	msg := err.Error()
-
-	i := strings.IndexRune(msg, '\n')
-	if i > 0 {
-		msg = msg[:i]
-	}
-
-	return msg
 }

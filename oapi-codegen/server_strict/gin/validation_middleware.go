@@ -1,8 +1,6 @@
 package main
 
 import (
-	"strings"
-
 	"github.com/gin-gonic/gin"
 	middleware "github.com/oapi-codegen/gin-middleware"
 
@@ -22,13 +20,11 @@ func addValidationMiddleware() (gin.HandlerFunc, error) {
 	}
 
 	mw := middleware.OapiRequestValidatorWithOptions(spec, &opts)
-	
+
 	return mw, nil
 }
 
-func errorHandler(c *gin.Context, message string, statusCode int) {
-	msg := getMsgFromErr(message)
-
+func errorHandler(c *gin.Context, msg string, statusCode int) {
 	c.Header("Content-Type", "application/json")
 	c.Status(statusCode)
 
@@ -49,12 +45,4 @@ type ErrorResponse struct {
 type Error struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
-}
-
-func getMsgFromErr(msg string) string {
-	if i := strings.IndexRune(msg, '\n'); i > 0 {
-		return msg[:i]
-	}
-
-	return msg
 }
