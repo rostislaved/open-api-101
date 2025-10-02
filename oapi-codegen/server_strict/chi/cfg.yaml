@@ -1,7 +1,7 @@
 package: api
 generate:
-    fiber-server: true
+    chi-server: true
     models: true
-    #    embedded-spec: true # for validation middleware
+    embedded-spec: true
     strict-server: true
 output: generated/gen.go

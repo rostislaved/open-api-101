@@ -2,4 +2,5 @@ package: api
 generate:
     std-http-server: true
     models: true
+#    embedded-spec: true # for validation middleware
 output: generated/gen.go
