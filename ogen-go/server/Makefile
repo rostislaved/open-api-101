@@ -2,7 +2,7 @@ generate:
 	rm -rf ./generated go.mod go.sum
 	go mod init server || true
 	mkdir generated
-	ogen --target generated --clean ../openapi.yaml
+	ogen --config ./ogen.yaml --target generated --clean ../openapi.yaml
 	go mod tidy
 
 mockery:

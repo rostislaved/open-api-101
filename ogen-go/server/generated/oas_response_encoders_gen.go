@@ -7,16 +7,13 @@ import (
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
-	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 )
 
-func encodeCreateUserResponse(response CreateUserRes, w http.ResponseWriter, span trace.Span) error {
+func encodeCreateUserResponse(response CreateUserRes, w http.ResponseWriter) error {
 	switch response := response.(type) {
 	case *CreateUserResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(201)
-		span.SetStatus(codes.Ok, http.StatusText(201))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -29,7 +26,6 @@ func encodeCreateUserResponse(response CreateUserRes, w http.ResponseWriter, spa
 	case *CreateUserBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -42,7 +38,6 @@ func encodeCreateUserResponse(response CreateUserRes, w http.ResponseWriter, spa
 	case *CreateUserInternalServerError:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(500)
-		span.SetStatus(codes.Error, http.StatusText(500))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -57,12 +52,11 @@ func encodeCreateUserResponse(response CreateUserRes, w http.ResponseWriter, spa
 	}
 }
 
-func encodeGetUserByIdResponse(response GetUserByIdRes, w http.ResponseWriter, span trace.Span) error {
+func encodeGetUserByIdResponse(response GetUserByIdRes, w http.ResponseWriter) error {
 	switch response := response.(type) {
 	case *GetUserByIdResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -75,7 +69,6 @@ func encodeGetUserByIdResponse(response GetUserByIdRes, w http.ResponseWriter, s
 	case *GetUserByIdNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -88,7 +81,6 @@ func encodeGetUserByIdResponse(response GetUserByIdRes, w http.ResponseWriter, s
 	case *GetUserByIdInternalServerError:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(500)
-		span.SetStatus(codes.Error, http.StatusText(500))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
